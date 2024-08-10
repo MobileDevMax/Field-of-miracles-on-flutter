@@ -1,0 +1,118 @@
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Field of miracles',
+      home: GameScreen(),
+    );
+  }
+}
+
+class GameScreen extends StatefulWidget {
+  @override
+  _GameScreenState createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  final List<Map<String, String>> questions = [
+    {'question': 'Earth sattelite?', 'answer': 'moon'},
+    {'question': 'Programmer from the movie Matrix?', 'answer': 'neo'},
+    {'question': 'The highest mountain in the world?', 'answer': 'chomolungma'},
+  ];
+
+  String selectedAnswer = '';
+  String guessedLetters = '';
+  String currentQuestion = '';
+
+  void startGame() {
+    final randomIndex = Random().nextInt(questions.length);
+    currentQuestion = questions[randomIndex]['question']!;
+    selectedAnswer = questions[randomIndex]['answer']!;
+    guessedLetters = '';
+  }
+
+  void guessLetter(String letter) {
+    setState(() {
+      guessedLetters += letter;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    startGame();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Field of miracles'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Question: $currentQuestion',
+              style: TextStyle(fontSize: 24),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: selectedAnswer.split('').map((letter) {
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 5),
+                  width: 30,
+                  height: 30,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                  ),
+                  child: Text(
+                    guessedLetters.contains(letter) ? letter : '_',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Guessed letters: $guessedLetters',
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 20),
+            Wrap(
+              spacing: 8.0,
+              children: 'abcdefghijklmnopqrstuvwxyz'.split('').map((letter) {
+                return ElevatedButton(
+                  onPressed: guessedLetters.contains(letter)
+                      ? null
+                      : () => guessLetter(letter),
+                  child: Text(letter),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  startGame();
+                });
+              },
+              child: Text('Start a new game'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
